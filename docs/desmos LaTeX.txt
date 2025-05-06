@@ -1,0 +1,32 @@
+R_{eset}
+C_{ode}=\left[\right]
+S_{tack}=\left[\right]
+P_{ointer}=1
+R_{x}=0
+R_{y}=0
+R_{acc}=0
+P_{buffer}=\left[\right]
+V_{ertx} = P_{buffer}\left[1,3...\max\left(4,\operatorname{length}\left(P_{buffer}\right) - 1\right)\right]
+V_{erty} = P_{buffer}\left[2,4...\max\left(4,\operatorname{length}\left(P_{buffer}\right)\right)\right]
+P_{olygon} = \operatorname{polygon}\left(V_{ertx},V_{erty}\right)
+P_{olystack} = []
+R_{1} = S_{tack} \to \left[\right]
+R_{2} = P_{ointer} \to 1
+R_{3} = R_{x} \to 0
+R_{4} = R_{y} \to 0
+R_{5} = R_{acc} \to 0
+R_{6} = P_{buffer} \to \left[\right]
+R_{7} = P_{olystack} \to \left[\right]
+R_{eset} = R_{1}, R_{2}, R_{3}, R_{4}, R_{5}, R_{6}, R_{7}
+P_{ush}\left(v\right) = S_{tack} \to \operatorname{join}\left(S_{tack}, \left[v\right]\right)
+S_{tacklen} = \operatorname{length}\left(S_{tack}\right)
+P_{op} = \left\{S_{tacklen} > 1 : S_{tack} \to S_{tack}\left[1...S_{tacklen}-1\right] , S_{tack} \to \left[\right] \right\}
+P_{oprx} = R_{x} \to S_{tack}\left[S_{tacklen}\right], P_{op}
+P_{opry} = R_{y} \to S_{tack}\left[S_{tacklen}\right], P_{op}
+P_{olypush} = \left(P_{buffer} \to \operatorname{join}\left(P_{buffer}, R_{x}\right), P_{ointer} \to P_{ointer} + 1\right)
+P_{oly} = \left(P_{olystack} \to \operatorname{join}\left(P_{olystack}, P_{olygon}\right), P_{buffer} \to \left[\right], P_{ointer} \to P_{ointer} + 1\right)
+J_{ump}(p) = \left\{p > 0 : P_{ointer} \to p , P_{ointer} \to 1 \right\}
+C_{all}(p) = S_{tack} \to \operatorname{join}\left(S_{tack}, \left[P_{ointer}, 0\right]\right), P_{ointer} \to p
+R_{et} = \left\{S_{tack}\left[S_{tacklen}\right] = 0: \left(P_{op},P_{ointer} \to S_{tack}\left[S_{tacklen}-1\right] + 2\right), P_{op}\right\}
+O_{p} = C_{ode}\left[P_{ointer}\right]
+M_{ain} = \left\{ O_{p} = 0 : \left(R_{x} \to C_{ode} \left[P_{ointer} + 1\right], P_{ointer} \to P_{ointer} + 2\right), O_{p} = 1 : \left(R_{y} \to C_{ode} \left[P_{ointer} + 1\right], P_{ointer} \to P_{ointer} + 2\right), O_{p} = 2 : \left(R_{x} \to R_{acc}, P_{ointer} \to P_{ointer} + 1\right), O_{p} = 3 : \left(R_{acc} -> R_{x} + R_{y}, P_{ointer} -> P_{ointer} + 1\right), O_{p} = 4 : \left\{S_{tack}\left[S_{tacklen}\right] = 0 : P_{ointer} \to P_{ointer} + 2, \left(J_{ump}\left(C_{ode}\left[P_{ointer} + 1\right]\right), P_{op}\right)\right\} , O_{p} = 5 : \left(P_{ush}\left(R_{x}\right), P_{ointer} -> P_{ointer} + 1\right), O_{p} = 6 : \left(P_{ush}\left(R_{y}\right), P_{ointer} -> P_{ointer} + 1\right), O_{p} = 7 : \left(P_{oprx} , P_{ointer} -> P_{ointer} + 1\right), O_{p} = 8 : \left(P_{opry} , P_{ointer} -> P_{ointer} + 1\right), O_{p} = 9 : \left(R_{x} \to R_{x} - 1 , P_{ointer} -> P_{ointer} + 1\right), O_{p} = 10 : \left(R_{y} \to R_{y} - 1 , P_{ointer} -> P_{ointer} + 1\right), O_{p} = 11 : \left(R_{x} \to S_{tack}\left[S_{tacklen} - C_{ode}\left[P_{ointer} + 1\right] + 1\right], P_{ointer} \to P_{ointer} + 2\right), O_{p} = 12 : \left(R_{y} \to S_{tack}\left[S_{tacklen} - C_{ode}\left[P_{ointer} + 1\right] + 1\right], P_{ointer} \to P_{ointer} + 2\right), O_{p} = 13 : C_{all}\left(C_{ode}\left[P_{ointer} + 1\right]\right), O_{p} = 14 : R_{et}, O_{p} = 15 : \left\{S_{tack}\left[S_{tacklen}\right] < C_{ode}\left[P_{ointer} + 1\right] : \left(J_{ump}\left(C_{ode}\left[P_{ointer} + 2\right]\right), P_{op}\right), P_{ointer} \to P_{ointer} + 3\right\},O_{p} = 16 : \left(R_{acc} \to R_{x} \cdot R_{y}, P_{ointer} \to P_{ointer} + 1 \right),O_{p} = 17 : \left(R_{x} \to - R_{x}, P_{ointer} \to P_{ointer} + 1 \right),O_{p} = 18 : \left(R_{x} \to \frac{1}{R_{x}}, P_{ointer} \to P_{ointer} + 1 \right),O_{p} = 19 : \left(P_{op}, P_{ointer} \to P_{ointer} + 1 \right), O_{p} = 20 : \left(R_{x} \to C_{ode}\left[C_{ode}\left[ P_{ointer} + 1 \right]\right], P_{ointer} \to P_{ointer} + 2\right), O_{p} = 21 : \left(R_{x} \to C_{ode}\left[R_{y}\right], P_{ointer} \to P_{ointer} + 1\right), O_{p} = 22 : P_{olypush}, O_{p} = 23 : P_{oly}\right\}

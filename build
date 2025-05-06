@@ -1,0 +1,7 @@
+lib: lib.dasm
+main: main.dasm
+
+merge $lib $main
+
+build $lib
+build $main

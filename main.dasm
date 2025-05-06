@@ -1,0 +1,23 @@
+#define SHAPE -1,0.25,0.5,0.25,0.5,0.5,1,0,0.5,-0.5,0.5,-0.25,-1,-0.25
+
+:load
+push rx
+jl 1, $start
+db $SHAPE
+
+:start
+ld ry 5
+
+:main
+mov rx ^ry
+ppush rx
+push ry
+pop rx
+ld ry 1
+add
+mov rx acc
+push rx
+pop ry
+push rx
+jl $start], $main
+poly ; "creates polygon and puts it on the "polygon stack"
