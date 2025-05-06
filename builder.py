@@ -27,7 +27,7 @@ _instructions = {
     r"mov\s+rx\s+\^ry": {"length": 1, "opcode": 21},
     r"ppush\s+rx": {"length": 1, "opcode": 22},
     r"poly": {"length": 1, "opcode": 23},
-    r"^db\s+(?:[,.-0-9]+|\$\w+(?=$|\s|\]))": {"length":-1, "opcode": None} # special instruction, defines values to put in to the code
+    r"^db\s+(?:[,.-0-9]*|\$\w+(?=$|\s|\]))": {"length":-1, "opcode": None} # special instruction, defines values to put in to the code
 }
 
 def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[str, Dasm]:
@@ -65,8 +65,11 @@ def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[st
         # compile code
         for line in code:
             if line[0] == ":": # detect labels
+                offset: int = 0
+                if manager.token_exists(f"__{file}_offset"):
+                    offset = int(manager.search_tokens(f"__{file}_offset"))
                 name: str = line[1:]
-                value: float = len(compiled) + 1
+                value: float = len(compiled) + 1 + offset
                 manager += Token(name, value)
 
             else: # normal instructions
@@ -78,6 +81,7 @@ def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[st
                     name: str = re.findall(r"\w+", token)[0]
                     print(line)
                     if manager.token_exists(name):
+                        print(name, manager, sep="\n")
                         line = re.sub(f"\\${name}(?:$|\\s|\\])", str(manager.search_tokens(name)), line)
                     print(line)
 

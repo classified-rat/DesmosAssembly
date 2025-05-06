@@ -1,7 +1,7 @@
-lib: lib.dasm
+load: lib.dasm
 main: main.dasm
 
-merge $lib $main
+merge $load $main
 
-build $lib
+build $load
 build $main
