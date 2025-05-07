@@ -37,6 +37,13 @@
 | 22     | 1      | ppsh rx                    | “Poly push” pushes value to polygon buffer          |
 | 23     | 1      | poly                       | Pushes polygon to polygon stack                     |
 
+there is one pseudo instruction `db` that just puts numbers in the compiled code
+```
+db 1,2,3,4,5 ; puts 1,2,3,4,5 in to the compiled output
+-> \left[...,1,2,3,4,5,...\right] 
+```
+
+
 ## Call frame
 
 the call frame has a pointer followed by a null zero.
