@@ -130,3 +130,18 @@ class Acommand:
                 return True
         return False
 
+class Point:
+    x: float
+    y: float
+
+    def __init__(self, x: float, y: float):
+        self.x = x
+        self.y = y
+
+class Polygon:
+    points: list[Point]
+
+    def __init__(self, X: list[float], Y: list[float]):
+        self.points = []
+        for i in range(len(X)):
+            self.points.append(Point(X[i], Y[i]))
