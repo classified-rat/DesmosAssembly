@@ -24,5 +24,11 @@ def parse(build: str) -> tuple[dict, list, list]:
                                                     args[2].strip()]).
                                      pass_vals(vals))
 
+        if re.match(r"output .*", line) is not None:
+            args = line.split(" ")
+            assemble_commands.append(Acommand("output",
+                                              [args[1].strip()]).
+                                     pass_vals(vals))
+
     print(vals)
     return vals, build_list, assemble_commands

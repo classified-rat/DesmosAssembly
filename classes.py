@@ -108,8 +108,11 @@ class Acommand:
     def __init__(self, name: str, args: list[str]):
         self.name = name
         self.args = args
+        self.file_reference = []
 
     def pass_vals(self, vals: dict) -> Acommand:
+        print(f"args: {self.args}")
+        print(f"file_ref: {self.file_reference}")
         for i, arg in enumerate(self.args):
             name: str = arg
             if arg.startswith("$"):
