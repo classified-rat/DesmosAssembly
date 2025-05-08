@@ -1,5 +1,10 @@
+import logging
 import regex as re
 from classes import Acommand
+
+# get logger
+logger = logging.getLogger("")
+
 
 def parse(build: str) -> tuple[dict, list, list]:
     vals: dict = {}
@@ -30,5 +35,6 @@ def parse(build: str) -> tuple[dict, list, list]:
                                               [args[1].strip()]).
                                      pass_vals(vals))
 
-    print(vals)
+    # print(vals)
+    logger.debug(f"Assembler commands: {assemble_commands}")
     return vals, build_list, assemble_commands

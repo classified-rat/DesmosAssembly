@@ -1,5 +1,10 @@
 from __future__ import annotations
+import logging
 from typing import Optional
+
+# get logger
+logger = logging.getLogger("")
+VERBOSE: int = 5  # custom logging level for this module
 
 # token class
 class Token:
@@ -12,9 +17,13 @@ class Token:
         self.name = name
         self.value = value
 
+        logger.log(VERBOSE, f"New token created {{\"{self.name}\": \"{self.value}\"}}")
+
     # set value of token if not set in constructor
     def set_value(self, value: float | str):
         self.value = value
+
+        logger.log(VERBOSE, f"Token defined {{\"{self.name}\": \"{self.value}\"}}")
 
     # returns whether token is defined
     def is_defined(self) -> bool:
@@ -38,7 +47,7 @@ class TokenManager:
     def set_token_value(self, name: str, value: float):
         for token in self.tokens:
             if token.name == name:
-                token.value = value
+                token.set_value(value)
                 return
         raise KeyError
 
@@ -47,6 +56,8 @@ class TokenManager:
         for token in self.tokens:
             if token.name == name:
                 return token.value
+
+        logger.exception(f"token {name} is not defined")
         raise KeyError
 
     def token_exists(self, name: str) -> bool:
@@ -65,6 +76,8 @@ class TokenManager:
         for token in self.tokens:
             if token.name == item:
                 return token
+
+        logger.exception(f"token {item} is not defined")
         raise KeyError
 
     # get string representation of manager
@@ -110,16 +123,18 @@ class Acommand:
         self.args = args
         self.file_reference = []
 
+        logger.log(VERBOSE, f"New assembler command object \"{self.name}\" created")
+
     def pass_vals(self, vals: dict) -> Acommand:
-        print(f"args: {self.args}")
-        print(f"file_ref: {self.file_reference}")
+        # print(f"args: {self.args}")
+        # print(f"file_ref: {self.file_reference}")
         for i, arg in enumerate(self.args):
             name: str = arg
             if arg.startswith("$"):
                 name = vals[arg[1:]]
 
             self.file_reference.append(name)
-            print(self.file_reference)
+            # print(self.file_reference)
 
         return self
 
@@ -129,6 +144,10 @@ class Acommand:
             if arg == name:
                 return True
         return False
+
+
+    def __repr__(self):
+        return f"<Acommand {self.name}>"
 
 class Point:
     x: float

@@ -1,5 +1,9 @@
+import logging
 import regex as re
 from classes import Token, TokenManager, Dasm, Acommand
+
+# get logger
+logger = logging.getLogger("")
 
 # list of instructions and associated data
 _instructions = {
@@ -33,6 +37,8 @@ _instructions = {
 def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[str, Dasm]:
     if type(files) is str:
         files = [files]
+
+    logger.info(f"compiling files: {files}")
 
     manager: TokenManager = TokenManager()
 
@@ -72,18 +78,16 @@ def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[st
                 value: float = len(compiled) + 1 + offset
                 manager += Token(name, value)
 
-            else: # normal instructions
+            else:  # normal instructions
 
-                print(re.search(r"\$\w+(?=$|\s|\])", line))
                 tokens: list[str] = re.findall(r"\$\w+(?=$|\s|\])", line)
                 for token in tokens:
                     token: str
                     name: str = re.findall(r"\w+", token)[0]
-                    print(line)
                     if manager.token_exists(name):
-                        print(name, manager, sep="\n")
-                        line = re.sub(f"\\${name}(?:$|\\s|\\])", str(manager.search_tokens(name)), line)
-                    print(line)
+                        rep = manager.search_tokens(name)
+                        logger.debug(f"token {token} replaced to {rep}\n\tin line \"{line}\"")
+                        line = re.sub(f"\\${name}(?:$|\\s|\\])", str(rep), line)
 
                 comp = parse_instruction(line, manager)
                 # print(f"{line} -> {comp}")
@@ -106,14 +110,14 @@ def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[st
 
         out[file] = dasm
 
-    print(manager)
+    # print(manager)
     return out
 
 def parse_instruction(instruction: str, manager: TokenManager) -> list:
     # figure out which instruction it is
     for inst in _instructions.keys():
         if re.match(inst, instruction) is not None:
-            print(inst, instruction, sep="\n", end="\n\n")
+            logger.debug(f"\"{instruction}\" matched instruction regex /{inst}/")
 
             # get the arguments for the opcode
             args: list = instruction.strip().split(",")
@@ -140,7 +144,8 @@ def parse_instruction(instruction: str, manager: TokenManager) -> list:
                                         "token": arg.strip()})
                         args[i] = "0.0"
 
-            print(args)
+            if len(args) > 0:
+                logger.debug(f"instruction args: {args}")
 
             # convert to numbers
             args = [float(re.sub(r"[\[\]]", "", arg)) for arg in args]
@@ -149,15 +154,17 @@ def parse_instruction(instruction: str, manager: TokenManager) -> list:
                 replace: dict
                 args[replace["index"]] = replace["token"]
 
-
             # return the code
             operation: list = [_instructions[inst]["opcode"]]+args if _instructions[inst]["opcode"] is not None else args
             return operation
 
+    # prevent exceptions by returning empty code list
+    logger.warning(f"instruction \"{instruction}\" did not match any instruction")
+    return []
+
 def finalize(code: dict[str, Dasm]) -> str:
     output: list = []
     for file in code.keys():
-        offset: int = code[file].offset
         i: int = 0
         for v in code[file].code:
             if i+code[file].offset+1 > len(output):
