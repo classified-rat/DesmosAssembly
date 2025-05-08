@@ -165,11 +165,34 @@ class Acommand:
         return f"<Acommand {self.name}>"
 
 
+# ----------------------------------------------
+# Desmos Emulation classes
+# the following classes are designed to emulate
+# the functionality of data types from Desmos
+# ----------------------------------------------
 
 
 class Dlist(UserList):
     """Emulation of Desmos' list"""
-    pass
+    def __getitem__(self, i):
+        if isinstance(i, slice):
+
+            i = slice(i.start - 1 if i.start is not None else None,
+                      i.stop - 1 if i.stop is not None else None,
+                      i.step)
+            return self.__class__(self.data[i])
+        else:
+            logger.log(VERBOSE, f"Dlist getitem index: {i}")
+            if i < 1 or i > len(self.data):
+                logger.warning("Dlist out of bounds reference, defaulting")
+                return None
+            return self.data[int(i - 1)]
+
+    def __setitem__(self, i, item):
+        self.data[i - 1] = item
+
+    def __repr__(self):
+        return f"D{repr(self.data)}"
 
 
 class Point:
@@ -181,12 +204,18 @@ class Point:
         self.x = x
         self.y = y
 
+    def __repr__(self):
+        return f"D({self.x}, {self.y})"
+
 
 class Polygon:
     """Emulation of Desmos' polygon"""
     points: list[Point]
 
-    def __init__(self, x: list[float], y: list[float]):
+    def __init__(self, x: Dlist[float], y: Dlist[float]):
         self.points = []
         for i in range(len(x)):
-            self.points.append(Point(x[i], y[i]))
+            self.points.append(Point(x[i + 1], y[i + 1]))
+
+    def __repr__(self):
+        return f"D<Polygon with {len(self.points)} points>"
