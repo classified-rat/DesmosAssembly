@@ -207,6 +207,9 @@ class Point:
     def __repr__(self):
         return f"D({self.x}, {self.y})"
 
+    def __str__(self):
+        return f"\\left({self.x}, {self.y}\\right)"
+
 
 class Polygon:
     """Emulation of Desmos' polygon"""
@@ -219,3 +222,47 @@ class Polygon:
 
     def __repr__(self):
         return f"D<Polygon with {len(self.points)} points>"
+
+    # get desmos LaTeX formula
+    def __str__(self):
+        points: list[str] = [repr(point) for point in self.points]
+        latex: str = f"\\left[{', '.join(points)}\\right]"
+        return latex
+
+    def __len__(self):
+        return len(points)
+
+# tests
+if __name__ == "__main__":
+    import sys
+
+    logging.basicConfig(stream=sys.stdout, format="%(levelname)s - %(module)s: %(message)s")
+    logging.addLevelName(5, "VERBOSE")
+    logging.addLevelName(9, "TEST")
+
+    TEST: int = 9
+
+    logger = logging.getLogger("")
+    logger.setLevel(TEST)
+
+    logger.log(5, "LOGGER STARTED")
+
+    ########################
+    # Desmos emulation tests
+    ########################
+
+    point: Point = Point(1,1)
+    logger.log(TEST, f"repr: {repr(point)}\n\tstr: {str(point)}")
+
+    assert point.x == 1
+    assert point.y == 1
+    assert str(point) == "\\left(1, 1\\right)"
+
+    points: Dlist[float] = Dlist((1,2,3,4))
+    polygon: Polygon = Polygon(points, points)
+
+    logger.log(TEST, f"repr: {repr(polygon)}\n\tstr: {str(polygon)}")
+
+    assert len(polygon) == 4
+    assert polygon.points[2].x == 3
+    assert str(polygon) == "\\left[D(1, 1), D(2, 2), D(3, 3), D(4, 4)\\right]"

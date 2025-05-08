@@ -8,7 +8,7 @@ logging.basicConfig(stream=sys.stdout, format="%(levelname)s - %(module)s: %(mes
 logging.addLevelName(5, "VERBOSE")
 
 logger = logging.getLogger("")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 logger.log(5, "LOGGER STARTED")
 
@@ -89,8 +89,11 @@ def polyPush(value: float):
 
 def poly():
     global Pbuffer
-    polyStack.append(_poly())
+    polygon: Polygon = _poly()
+    polyStack.append(polygon)
     Pbuffer = Dlist()
+
+    logger.debug(f"Added polygon to stack {repr(polygon)}")
 
 def popPoly():
     global polyStack

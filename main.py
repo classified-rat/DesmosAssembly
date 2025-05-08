@@ -10,7 +10,7 @@ logging.basicConfig(stream=sys.stdout, format="%(levelname)s - %(module)s: %(mes
 logging.addLevelName(5, "VERBOSE")
 
 logger = logging.getLogger("")
-logger.setLevel(logging.NOTSET)
+logger.setLevel(logging.INFO)
 
 logger.log(5, "LOGGER STARTED")
 
