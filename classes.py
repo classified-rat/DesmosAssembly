@@ -1,13 +1,16 @@
 from __future__ import annotations
 import logging
 from typing import Optional
+from collections import UserList
 
 # get logger
 logger = logging.getLogger("")
 VERBOSE: int = 5  # custom logging level for this module
 
+
 # token class
 class Token:
+    """Keeps track of values used for compilation"""
     # properties
     name: str
     value: float | str
@@ -20,75 +23,92 @@ class Token:
         logger.log(VERBOSE, f"New token created {{\"{self.name}\": \"{self.value}\"}}")
 
     # set value of token if not set in constructor
-    def set_value(self, value: float | str):
+    def set_value(self, value: float | str) -> None:
+        """Sets value of token and triggers log message"""
         self.value = value
-
         logger.log(VERBOSE, f"Token defined {{\"{self.name}\": \"{self.value}\"}}")
 
     # returns whether token is defined
     def is_defined(self) -> bool:
+        """checks if the token has a value"""
         return self.value is not None
+
+    def __repr__(self):
+        return f"{{\"{self.name}\":\"{self.value}\"}}"
+
 
 # keeps all tokens in one place
 class TokenManager:
+    """Keeps track of and manages individual tokens"""
     tokens: list[Token]
 
     def __init__(self):
         self.tokens = []
 
-    def add_token(self, token: Token):
+    def add_token(self, token: Token) -> None:
+        """Adds token manager registry"""
         self.tokens.append(token)
+        logger.log(VERBOSE, f"Token added to manager {token}")
 
-    def __iadd__(self, other: Token):
-        self.tokens.append(other)
+    def __iadd__(self, other: Token) -> TokenManager:
+        """Adds token manager registry"""
+        self.add_token(other)
         return self
 
     # set value of token given a name
-    def set_token_value(self, name: str, value: float):
+    def set_token_value(self, name: str, value: float) -> None:
+        """Set a token value based on a name"""
         for token in self.tokens:
             if token.name == name:
                 token.set_value(value)
                 return
+
+        logger.exception(f"No token \"{name}\" exists")
         raise KeyError
 
     # get value of token based on name
     def search_tokens(self, name: str) -> float | str:
+        """Get value of a token based on a name"""
         for token in self.tokens:
             if token.name == name:
                 return token.value
 
-        logger.exception(f"token {name} is not defined")
+        logger.exception(f"No token \"{name}\" exists")
         raise KeyError
 
     def token_exists(self, name: str) -> bool:
+        """Check to see if a token exists"""
         for token in self.tokens:
             if token.name == name:
                 return True
         return False
 
     def token_exists_with_value(self, name: str) -> bool:
+        """Check if a token exists and if it is defined"""
         if self.token_exists(name):
             return self[name].is_defined()
         return False
 
     # get token by name
-    def __getitem__(self, item: str):
+    def __getitem__(self, item: str) -> Token:
         for token in self.tokens:
             if token.name == item:
                 return token
 
-        logger.exception(f"token {item} is not defined")
+        logger.exception(f"No token \"{item}\" exists")
         raise KeyError
 
     # get string representation of manager
-    def __repr__(self):
+    def __repr__(self) -> str:
         out: str = ""
         for token in self.tokens:
             out += f"{token.name}: {token.value}\n"
         return out
 
+
 # data structure representing compiled code
 class Dasm:
+    """Represents a compiled .dasm file"""
     file_name: str
     code: list
     raw_code: list[str]
@@ -105,15 +125,17 @@ class Dasm:
         else:
             self.has_raw_code: bool = True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Dasm {self.file_name} : {self.code}>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         code = [str(e) for e in self.code]
         return f"\\left[{', '.join(code)}\\right]"
 
+
 # assembler command representation
 class Acommand:
+    """Represent a command used at some point in the compilation process"""
     name: str
     args: list[str]
     file_reference: list[str] = []
@@ -126,6 +148,7 @@ class Acommand:
         logger.log(VERBOSE, f"New assembler command object \"{self.name}\" created")
 
     def pass_vals(self, vals: dict) -> Acommand:
+        """Pass the values from the build file"""
         # print(f"args: {self.args}")
         # print(f"file_ref: {self.file_reference}")
         for i, arg in enumerate(self.args):
@@ -138,18 +161,19 @@ class Acommand:
 
         return self
 
-
-    def find_file_reference(self, name: str) -> bool:
-        for arg in self.file_reference:
-            if arg == name:
-                return True
-        return False
-
-
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Acommand {self.name}>"
 
+
+
+
+class Dlist(UserList):
+    """Emulation of Desmos' list"""
+    pass
+
+
 class Point:
+    """Emulation of Desmos' Point"""
     x: float
     y: float
 
@@ -157,10 +181,12 @@ class Point:
         self.x = x
         self.y = y
 
+
 class Polygon:
+    """Emulation of Desmos' polygon"""
     points: list[Point]
 
-    def __init__(self, X: list[float], Y: list[float]):
+    def __init__(self, x: list[float], y: list[float]):
         self.points = []
-        for i in range(len(X)):
-            self.points.append(Point(X[i], Y[i]))
+        for i in range(len(x)):
+            self.points.append(Point(x[i], y[i]))
