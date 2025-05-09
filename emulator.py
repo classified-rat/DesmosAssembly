@@ -8,7 +8,7 @@ logging.basicConfig(stream=sys.stdout, format="%(levelname)s - %(module)s: %(mes
 logging.addLevelName(5, "VERBOSE")
 
 logger = logging.getLogger("")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 logger.log(5, "LOGGER STARTED")
 
@@ -31,7 +31,6 @@ pointer = 1
 Pbuffer: Dlist[float] = Dlist()
 vertx: Dlist[float]
 verty: Dlist[float]
-poly: Polygon
 polyStack: Dlist[Polygon] = Dlist()
 
 rx: float = 0
@@ -55,6 +54,8 @@ def _poly() -> Polygon:
 # stack functions
 def push(v: float):
     stack.append(v)
+
+    logger.debug(f"Push to stack\n\tstack = {stack}")
 
 
 def poprx():
@@ -102,10 +103,11 @@ def polyPush(value: float):
 def poly():
     global Pbuffer
     polygon: Polygon = _poly()
+    logger.debug(f"Adding polygon: {polygon.points}")
     polyStack.append(polygon)
     Pbuffer = Dlist()
 
-    logger.debug(f"Added polygon to stack {repr(polygon)}")
+    # logger.debug(f"Added polygon to stack {repr(polygon)}")
 
 
 def popPoly():
@@ -119,7 +121,7 @@ def main():
     global rx, ry, acc, pointer, stack
     op = code[pointer]
 
-    logger.debug(f"opcode: {op}")
+    logger.log(STATE, f"Op = {op} | pointer = {pointer}\n\tstack = {stack}\n\tlookahead = {code[int(pointer):int(pointer+3)]}")
 
     if op == 0:  # ld rx
         rx = code[pointer + 1]
@@ -138,7 +140,7 @@ def main():
         pointer += 1
 
     elif op == 4:  # jnz
-        if stack[len(stack)] == 0:
+        if stack.pop() == 0:
             pointer += 2
         else:
             jump(code[pointer + 1])
@@ -168,21 +170,23 @@ def main():
         pointer += 1
 
     elif op == 11:  # mov rx []
-        rx = stack[len(stack) - code[pointer + 1]]
+        rx = stack[len(stack) - code[pointer + 1] + 1]
         pointer += 2
 
     elif op == 12:  # mov ry []
-        ry = stack[len(stack) - code[pointer + 1]]
+        ry = stack[len(stack) - code[pointer + 1] + 1]
         pointer += 2
 
     elif op == 13:  # call
         call(code[pointer + 1])
 
+        logger.debug(f"invoked call to {pointer}")
+
     elif op == 14:  # ret
         ret()
 
     elif op == 15:  # jl
-        if stack[len(stack)] < code[pointer + 1]:
+        if stack.pop() < code[pointer + 1]:
             jump(code[pointer + 2])
         else:
             pointer += 3
@@ -219,13 +223,22 @@ def main():
         poly()
         pointer += 1
 
+        logger.debug(f"poly call\n\tpolyStack = {polyStack}")
+
     elif op == 24:  # polypop
         polyStack.pop()
         pointer += 1
 
+        logger.debug(f"polypop call\n\tpolyStack = {polyStack}")
+
 
 # driver
 if __name__ == "__main__":
+    logging.addLevelName(11,"STATE")
+    STATE: int = 11
+
+    logger.setLevel(11)
+
     max_steps: int = int(1e5)
     step: int = 0
     while pointer <= len(code) and step < max_steps:

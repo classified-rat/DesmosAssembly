@@ -1,4 +1,6 @@
 #define box_t 0,0,0,1,1,1,1,0
+#define BOX_HEIGHT 2
+#define BOX_WIDTH 1.5
 
 push rx
 jl 1, $start
@@ -30,9 +32,13 @@ mov rx ^ry  ; load x value in rx
 
 push ry     ; save ry
 
-mov ry [2] ; load x_offset
+mov ry [2]  ; load x_offset
 add         ; add x_offset to x
 mov rx acc  
+
+ld ry $BOX_WIDTH
+mult        ; y *= ry ; note: ry could come from any function of x_offset
+mov rx acc
 
 pop ry      ; restore ry from stack
 ppush rx    ; push x to polygon stack
@@ -44,11 +50,11 @@ pop
 mov rx ^ry  ; load y value in rx
 
 push ry     ; save ry
-ld ry 2     ; ld 2 in ry
+ld ry $BOX_HEIGHT
 mult        ; y *= ry ; note: ry could come from any function of x_offset
 mov rx acc
 
-pop ry
+pop ry      ; restore ry
 ppush rx
 
 call $incry ; increment ry by 1
@@ -71,5 +77,15 @@ push rx     ; update x_offset
 ld ry $box
 
 push rx
-jl 2, $main
+jl 3, $main
 pop
+
+:debug_main_restart
+polypop     ; clear polygon stack
+polypop
+polypop
+
+pop         ; clear stack
+ld rx 0     ; jump back to start of program
+push rx
+jl 1, $start
