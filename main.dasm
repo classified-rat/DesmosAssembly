@@ -14,3 +14,9 @@ pop ry
 push rx
 jl $start], $main
 poly ; "creates polygon and puts it on the "polygon stack"
+polypop
+
+pop
+ld rx 0
+push rx
+jl 1, $start

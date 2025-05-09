@@ -26,11 +26,12 @@ _instructions = {
     r"mult": {"length": 1, "opcode": 16},
     r"neg": {"length": 1, "opcode": 17},
     r"inv": {"length": 1, "opcode": 18},
-    r"pop": {"length": 1, "opcode": 19},
+    r"^pop": {"length": 1, "opcode": 19},
     r"mov\s+rx\s+\^(?:[0-9]+|\$\w+(?=$|\s|\]))": {"length": 2, "opcode": 20},
     r"mov\s+rx\s+\^ry": {"length": 1, "opcode": 21},
     r"ppush\s+rx": {"length": 1, "opcode": 22},
-    r"poly": {"length": 1, "opcode": 23},
+    r"poly[^p]": {"length": 1, "opcode": 23},
+    r"polypop": {"length": 1, "opcode": 24},
     r"^db\s+(?:[,.-0-9]*|\$\w+(?=$|\s|\]))": {"length":-1, "opcode": None} # special instruction, defines values to put in to the code
 }
 

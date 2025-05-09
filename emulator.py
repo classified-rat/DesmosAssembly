@@ -204,7 +204,8 @@ def main():
         pointer += 1
 
     elif op == 24:  # polypop
-        raise NotImplementedError()
+        polyStack.pop()
+        pointer += 1
 
 # driver
 if __name__ == "__main__":
