@@ -30,7 +30,7 @@ _instructions = {
     r"mov\s+rx\s+\^(?:[0-9]+|\$\w+(?=$|\s|\]))": {"length": 2, "opcode": 20},
     r"mov\s+rx\s+\^ry": {"length": 1, "opcode": 21},
     r"ppush\s+rx": {"length": 1, "opcode": 22},
-    r"poly[^p]": {"length": 1, "opcode": 23},
+    r"poly\s*$": {"length": 1, "opcode": 23},
     r"polypop": {"length": 1, "opcode": 24},
     r"^db\s+(?:[,.-0-9]*|\$\w+(?=$|\s|\]))": {"length":-1, "opcode": None} # special instruction, defines values to put in to the code
 }
@@ -71,6 +71,7 @@ def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[st
 
         # compile code
         for line in code:
+            line = line.strip()
             if line[0] == ":": # detect labels
                 offset: int = 0
                 if manager.token_exists(f"__{file}_offset"):
@@ -112,6 +113,7 @@ def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[st
         out[file] = dasm
 
     # print(manager)
+    logger.info(f"Manager tokens: {manager}")
     return out
 
 def parse_instruction(instruction: str, manager: TokenManager) -> list:
