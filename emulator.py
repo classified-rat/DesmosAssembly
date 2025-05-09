@@ -8,7 +8,7 @@ logging.basicConfig(stream=sys.stdout, format="%(levelname)s - %(module)s: %(mes
 logging.addLevelName(5, "VERBOSE")
 
 logger = logging.getLogger("")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 logger.log(5, "LOGGER STARTED")
 
@@ -118,6 +118,8 @@ def popPoly():
 def main():
     global rx, ry, acc, pointer, stack
     op = code[pointer]
+
+    logger.debug(f"opcode: {op}")
 
     if op == 0:  # ld rx
         rx = code[pointer + 1]
@@ -233,4 +235,4 @@ if __name__ == "__main__":
     if step == max_steps:
         logger.warning(f"emulator stopped after {max_steps} steps")
 
-    logger.info(f"Polygons: {polyStack}")
+    logger.info(f"Polygons: {'\n\t'.join([str(poly.points) for poly in polyStack.as_list()])}")

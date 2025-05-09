@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+import sys
 from typing import Optional
 from collections import UserList
 
@@ -64,6 +65,7 @@ class TokenManager:
                 return
 
         logger.exception(f"No token \"{name}\" exists")
+        logger.log(VERBOSE, f"manager: {self}")
         raise KeyError
 
     # get value of token based on name
@@ -74,6 +76,7 @@ class TokenManager:
                 return token.value
 
         logger.exception(f"No token \"{name}\" exists")
+        logger.log(VERBOSE, f"manager: {self}")
         raise KeyError
 
     def token_exists(self, name: str) -> bool:
@@ -96,14 +99,15 @@ class TokenManager:
                 return token
 
         logger.exception(f"No token \"{item}\" exists")
+        logger.log(VERBOSE, f"manager: {self}")
         raise KeyError
 
     # get string representation of manager
     def __repr__(self) -> str:
-        out: str = ""
+        out: list[str] = []
         for token in self.tokens:
-            out += f"{token.name}: {token.value}\n"
-        return out
+            out.append(f"{token.name}: {token.value}")
+        return f"[{', '.join(out)}]"
 
 
 # data structure representing compiled code
@@ -174,6 +178,9 @@ class Acommand:
 
 class Dlist(UserList):
     """Emulation of Desmos' list"""
+
+    def as_list(self):
+        return self.data
     def __getitem__(self, i):
         if isinstance(i, slice):
 
@@ -184,7 +191,7 @@ class Dlist(UserList):
         else:
             logger.log(VERBOSE, f"Dlist getitem index: {i}")
             if i < 1 or i > len(self.data):
-                logger.warning("Dlist out of bounds reference, defaulting")
+                logger.warning("Dlist out of bounds reference, defaulting", stack_info=True)
                 return None
             return self.data[int(i - 1)]
 
