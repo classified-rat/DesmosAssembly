@@ -38,30 +38,38 @@ rx: float = 0
 ry: float = 0
 acc: float = 0
 
+
 # dynamic values
 def vertx() -> Dlist[float]:
     return Pbuffer[1::2]
 
+
 def verty() -> Dlist[float]:
     return Pbuffer[2::2]
 
+
 def _poly() -> Polygon:
     return Polygon(vertx(), verty())
+
 
 # stack functions
 def push(v: float):
     stack.append(v)
 
+
 def poprx():
     global rx
     rx = stack.pop()
+
 
 def popry():
     global ry
     ry = stack.pop()
 
+
 def popnull():
     stack.pop()
+
 
 # utility functions
 def jump(jumpPointer: float):
@@ -71,10 +79,12 @@ def jump(jumpPointer: float):
     else:
         pointer = jumpPointer
 
+
 def call(callPointer: float):
     global pointer
     stack.extend((pointer, 0))
     pointer = callPointer
+
 
 def ret():
     global pointer
@@ -84,8 +94,10 @@ def ret():
     else:
         popnull()
 
+
 def polyPush(value: float):
     Pbuffer.append(value)
+
 
 def poly():
     global Pbuffer
@@ -95,9 +107,11 @@ def poly():
 
     logger.debug(f"Added polygon to stack {repr(polygon)}")
 
+
 def popPoly():
     global polyStack
     polyStack = polyStack.pop()
+
 
 # interpereter
 
@@ -125,7 +139,7 @@ def main():
         if stack[len(stack)] == 0:
             pointer += 2
         else:
-            jump(code[pointer + 1])\
+            jump(code[pointer + 1])
 
     elif op == 5:  # push rx
         push(rx)
@@ -207,9 +221,16 @@ def main():
         polyStack.pop()
         pointer += 1
 
+
 # driver
 if __name__ == "__main__":
-    while pointer <= len(code):
+    max_steps: int = int(1e5)
+    step: int = 0
+    while pointer <= len(code) and step < max_steps:
         main()
+        step += 1
+
+    if step == max_steps:
+        logger.warning(f"emulator stopped after {max_steps} steps")
 
     logger.info(f"Polygons: {polyStack}")
