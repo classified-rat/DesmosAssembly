@@ -1,9 +1,5 @@
-load: lib.dasm
 main: main.dasm
 
-merge $load $main
-
-build $load
 build $main
 
 output o.txt
