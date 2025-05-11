@@ -186,8 +186,9 @@ def main():
         ret()
 
     elif op == 15:  # jl
-        if stack.pop() < code[pointer + 1]:
+        if stack[len(stack)] < code[pointer + 1]:
             jump(code[pointer + 2])
+            stack.pop()
         else:
             pointer += 3
 
@@ -237,15 +238,36 @@ if __name__ == "__main__":
     logging.addLevelName(11,"STATE")
     STATE: int = 11
 
-    logger.setLevel(11)
+    logger.setLevel(STATE)
 
+    stats: dict = {
+        "max polygons": {
+            "count": 0,
+            "list": []
+        },
+        "step count": 0
+    }
     max_steps: int = int(1e5)
     step: int = 0
     while pointer <= len(code) and step < max_steps:
         main()
         step += 1
 
+        stats["step count"] = step
+
+        if len(polyStack) > stats["max polygons"]["count"]:
+            stats["max polygons"] = {
+                "count": len(polyStack),
+                "list": polyStack.copy()
+            }
+            logger.log(STATE, f"STATS: stats")
+
     if step == max_steps:
         logger.warning(f"emulator stopped after {max_steps} steps")
 
+        # keep track of stats
+
+
     logger.info(f"Polygons: {'\n\t'.join([str(poly.points) for poly in polyStack.as_list()])}")
+    polygons = f"[{',\n\t'.join([str(p) for p in stats["max polygons"]["list"].as_list()])}]"
+    logger.info(f"stats\n\tstep count: {stats["step count"]}\n\tMax polygons: {stats["max polygons"]["count"]}\n\t{polygons}")

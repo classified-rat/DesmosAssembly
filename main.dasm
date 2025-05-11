@@ -79,13 +79,3 @@ ld ry $box
 push rx
 jl 3, $main
 pop
-
-:debug_main_restart
-polypop     ; clear polygon stack
-polypop
-polypop
-
-pop         ; clear stack
-ld rx 0     ; jump back to start of program
-push rx
-jl 1, $start
