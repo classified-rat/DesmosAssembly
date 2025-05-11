@@ -121,7 +121,7 @@ def main():
     global rx, ry, acc, pointer, stack
     op = code[pointer]
 
-    logger.log(STATE, f"Op = {op} | pointer = {pointer}\n\tstack = {stack}\n\tlookahead = {code[int(pointer):int(pointer+3)]}")
+    logger.log(STATE, f"Op = {op} | pointer = {pointer} | rx = {rx} | ry = {ry} | acc = {acc}\n\tstack = {stack}\n\tlookahead = {code[int(pointer):int(pointer+3)]}")
 
     if op == 0:  # ld rx
         rx = code[pointer + 1]
@@ -232,18 +232,23 @@ def main():
 
         logger.debug(f"polypop call\n\tpolyStack = {polyStack}")
 
+    elif op == 25:  # mov ^ry rx
+        code[int(ry)] = rx
+        pointer += 1
+        logger.debug(f"Changed address {ry} to {rx}")
+
 
 # driver
 if __name__ == "__main__":
     logging.addLevelName(11,"STATE")
     STATE: int = 11
 
-    logger.setLevel(STATE)
+    logger.setLevel(logging.DEBUG)
 
     stats: dict = {
         "max polygons": {
             "count": 0,
-            "list": []
+            "list": Dlist()
         },
         "step count": 0
     }
@@ -254,6 +259,7 @@ if __name__ == "__main__":
         step += 1
 
         stats["step count"] = step
+        logger.info(step)
 
         if len(polyStack) > stats["max polygons"]["count"]:
             stats["max polygons"] = {
@@ -270,4 +276,4 @@ if __name__ == "__main__":
 
     logger.info(f"Polygons: {'\n\t'.join([str(poly.points) for poly in polyStack.as_list()])}")
     polygons = f"[{',\n\t'.join([str(p) for p in stats["max polygons"]["list"].as_list()])}]"
-    logger.info(f"stats\n\tstep count: {stats["step count"]}\n\tMax polygons: {stats["max polygons"]["count"]}\n\t{polygons}")
+    logger.info(f"stats\n\tstep count: {stats["step count"]}\n\tFinal stack: {stack}\n\tMax polygons: {stats["max polygons"]["count"]}\n\t{polygons}")
