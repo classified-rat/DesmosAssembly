@@ -1,5 +1,9 @@
-main: main.dasm
+lib: stdlib.dasm
+main: variabletests.dasm
 
+merge $lib $main
+
+build $lib
 build $main
 
 output o.txt

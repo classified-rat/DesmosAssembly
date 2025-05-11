@@ -1,0 +1,56 @@
+push rx
+jl 1, $main
+
+:z
+resb 1
+
+:rep
+resb 1
+
+:start
+ld rx 15
+ld ry $z
+
+mov ^ry rx ; load 15 in to z
+
+:main
+
+ld rx 5
+ld ry 10
+
+add
+mov rx acc
+
+push rx
+
+ld ry $z
+mov rx ^ry
+
+pop ry
+add
+mov rx acc
+
+push rx
+
+:writez
+ld ry $z
+ld rx 20
+:_debug_write
+mov ^ry rx
+
+:_debug_get_rep
+ld ry $rep
+mov rx ^ry
+
+push rx
+jl 1, $repeat
+jnz $end
+
+:repeat
+ld rx 2
+mov ^ry rx
+push rx
+jl 3, $main
+
+db -1
+:end

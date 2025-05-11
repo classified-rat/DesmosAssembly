@@ -1,0 +1,60 @@
+#define CIRCLE 1,0,0.991,0.131,0.966,0.259,0.924,0.383,0.866,0.5,0.793,0.609,0.707,0.707,0.609,0.793,0.5,0.866,0.383,0.924,0.259,0.966,0.131,0.991,0,1,-0.131,0.991,-0.259,0.966,-0.383,0.924,-0.5,0.866,-0.609,0.793,-0.707,0.707,-0.793,0.609,-0.866,0.5,-0.924,0.383,-0.966,0.259,-0.991,0.131,-1,0,-0.991,-0.131,-0.966,-0.259,-0.924,-0.383,-0.866,-0.5,-0.793,-0.609,-0.707,-0.707,-0.609,-0.793,-0.5,-0.866,-0.383,-0.924,-0.259,-0.966,-0.131,-0.991,0,-1,0.131,-0.991,0.259,-0.966,0.383,-0.924,0.5,-0.866,0.609,-0.793,0.707,-0.707,0.793,-0.609,0.866,-0.5,0.924,-0.383,0.966,-0.259,0.991,-0.131
+
+; jump to end of standard library
+push rx
+jl 1, $end
+
+:swap       ; swap rx and ry
+push rx
+push ry
+pop rx
+pop ry
+ret
+
+:incrx
+push ry     ; save ry
+ld ry 1     ; ry = 1
+add         ; rx += ry
+mov rx acc
+pop ry      ; restore ry
+ret
+
+:incry
+push rx     ; save rx
+
+ld rx 1     ; add 1 to ry
+add
+mov rx acc
+push rx
+pop ry
+
+pop rx      ; restore rx
+ret
+
+:sub        ; rx -= ry
+push ry     ; save ry
+
+call $swap   ; swap ry and rx
+pop
+neg         ; negate rx
+call $swap   ; swap rx and ry back
+pop
+
+add         ; subtraction
+pop ry      ; restore previous ry
+ret
+
+:div        ; rx /= ry
+push ry     ; save ry
+
+call $swap   ; swap rx and ry
+pop
+inv         ; get inverse of y
+call $swap
+pop
+
+mult        ; division
+pop ry      ; restore ry
+ret
+
+:end

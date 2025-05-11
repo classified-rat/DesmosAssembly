@@ -32,7 +32,9 @@ _instructions = {
     r"ppush\s+rx": {"length": 1, "opcode": 22},
     r"poly\s*$": {"length": 1, "opcode": 23},
     r"polypop": {"length": 1, "opcode": 24},
-    r"^db\s+(?:[,.-0-9]*|\$\w+(?=$|\s|\]))": {"length":-1, "opcode": None} # special instruction, defines values to put in to the code
+    r"mov\s+\^ry\s+rx": {"length": 1, "opcode": 25},
+    r"^db\s+(?:[,.-0-9]*|\$\w+(?=$|\s|\]))": {"length": -1, "opcode": None, "name": "db"}, # special instructions, defines values to put in to the code
+    r"^resb\s+(?:[0-9]*|\$\w+(?=$|\s|\]))": {"length": -1, "opcode": None, "name": "resb"}
 }
 
 def build(files: list[str] | str, assembler_commands: list[Acommand]) -> dict[str, Dasm]:
@@ -129,6 +131,11 @@ def parse_instruction(instruction: str, manager: TokenManager) -> list:
             # truncate length of args to needed length
             if not _instructions[inst]["length"] == -1:
                 args: str = args[:_instructions[inst]["length"]-1]
+
+            if instruction.startswith("resb"):
+                logger.debug("reserving memory")
+                args = ["0"] * int(args[0])
+
 
             # get tokens in args
             retoken: list = []

@@ -1,0 +1,8 @@
+ld rx 0
+
+ld ry -1000
+
+call $incrx
+pop
+
+push rx

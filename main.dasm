@@ -1,31 +1,19 @@
 #define box_t 0,0,0,1,1,1,1,0
-#define BOX_HEIGHT 2
-#define BOX_WIDTH 1.5
+#define HEIGHT 2
+#define WIDTH 1.5
 
 push rx
 jl 1, $start
 
-:box
-db $box_t
-:boxend
-
-:incry
-push rx     ; save rx
-
-ld rx 1     ; add 1 to ry
-add
-mov rx acc
-push rx
-pop ry
-
-pop rx      ; restore rx
-ret
+:shape
+db $CIRCLE
+:shapeend
 
 :start
 ld rx 0     ; initilize stack variables
 push rx     ; x_offset = 0
 
-ld ry $box  ; ld box pointer in to ry
+ld ry $shape; ld box pointer in to ry
 
 :main       ; main code loop
 mov rx ^ry  ; load x value in rx
@@ -36,7 +24,7 @@ mov ry [2]  ; load x_offset
 add         ; add x_offset to x
 mov rx acc  
 
-ld ry $BOX_WIDTH
+ld ry $WIDTH
 mult        ; y *= ry ; note: ry could come from any function of x_offset
 mov rx acc
 
@@ -50,7 +38,7 @@ pop
 mov rx ^ry  ; load y value in rx
 
 push ry     ; save ry
-ld ry $BOX_HEIGHT
+ld ry $HEIGHT
 mult        ; y *= ry ; note: ry could come from any function of x_offset
 mov rx acc
 
@@ -61,7 +49,7 @@ call $incry ; increment ry by 1
 pop
 
 push ry
-jl $boxend], $main
+jl $shapeend], $main
 pop
 
 :debug_main_x_offset_adjust
@@ -74,7 +62,7 @@ mov rx acc
 
 push rx     ; update x_offset
 
-ld ry $box
+ld ry $shape
 
 push rx
 jl 3, $main
