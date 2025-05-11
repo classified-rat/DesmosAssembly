@@ -48,8 +48,12 @@ class TokenManager:
 
     def add_token(self, token: Token) -> None:
         """Adds token manager registry"""
-        self.tokens.append(token)
-        logger.log(VERBOSE, f"Token added to manager {token}")
+        if self.token_exists(token.name):
+            logger.warning(f"Token \"{token.name}\" already exists, this may cause issues. overwriting existing token")
+            self.set_token_value(token.name, token.value)
+        else:
+            self.tokens.append(token)
+            logger.log(VERBOSE, f"Token added to manager {token}")
 
     def __iadd__(self, other: Token) -> TokenManager:
         """Adds token manager registry"""
