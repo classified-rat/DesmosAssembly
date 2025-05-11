@@ -2,7 +2,7 @@
 
 ; jump to end of standard library
 push rx
-jl 1, $end
+jl 1, $_std_end
 
 :swap       ; swap rx and ry
 push rx
@@ -57,4 +57,4 @@ mult        ; division
 pop ry      ; restore ry
 ret
 
-:end
+:_std_end
