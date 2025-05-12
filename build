@@ -1,5 +1,5 @@
 lib: dasm/stdlib.dasm
-main: dasm/variabletests.dasm
+main: dasm/guitest.dasm
 
 merge $lib $main
 
