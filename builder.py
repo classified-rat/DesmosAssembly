@@ -158,7 +158,7 @@ def parse_instruction(instruction: str, manager: TokenManager) -> list:
                 logger.debug(f"instruction args: {args}")
 
             # convert to numbers
-            args = [float(re.sub(r"[\[\]]", "", arg)) for arg in args]
+            args = [float(re.sub(r"[\[\]]", "", arg).replace("^","")) for arg in args]
 
             for replace in retoken:
                 replace: dict
