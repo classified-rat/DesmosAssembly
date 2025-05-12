@@ -1,0 +1,73 @@
+#define BAR_X .1
+#define BAR_Y .2
+
+push rx
+jl 1, $start
+
+:box_offset
+db 0,0,0,1,1,1,1,0
+:box_offset_end
+
+:pos
+resb 2
+
+:get_pos
+; index = rx
+; address = ry
+push ry       ; save ry
+
+call $swap    ; swap rx and ry ; may be removable
+pop
+add           ; address += index
+mov rx acc
+call $swap    ; swap rx and ry back
+pop
+
+mov rx ^ry    ; get value at address
+pop ry        ; restore ry
+ret
+
+:set_pos
+; index = rx
+; address = ry
+; value = [2]
+push ry       ; save rx and ry
+push rx
+
+add           ; add offset to pointer
+mov rx acc
+call $swap    ; swap rx and ry
+pop
+
+mov rx [5]    ; rx = value
+mov ^ry rx
+
+pop rx        ; restore rx and ry
+pop ry
+ret
+
+:draw_box
+ld ry
+
+:_draw_box_loop
+
+
+:start
+ld rx 1       ; put one on stack
+push rx
+
+ld rx 0
+ld ry $pos
+
+:_debug_set_x
+call $set_pos ; vec.x = 1
+pop
+
+:_debug_get_x
+ld rx 0       ; load 0 in rx
+ld ry $pos
+call $get_pos  ; rx = vec.x
+pop
+
+pop
+push rx       ; put vec.x on stack

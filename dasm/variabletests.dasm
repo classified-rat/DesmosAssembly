@@ -1,18 +1,13 @@
-push rx
+push rx    ; jump to start
 jl 1, $main
 
 :z
-resb 1
+db 15      ; z value
 
 :rep
-resb 1
+resb 1     ; reserve space for boolean
 
 :start
-ld rx 15
-ld ry $z
-
-mov ^ry rx ; load 15 in to z
-
 :main
 
 ld rx 5
@@ -23,8 +18,7 @@ mov rx acc
 
 push rx
 
-ld ry $z
-mov rx ^ry
+mov rx ^$z
 
 pop ry
 add
@@ -39,18 +33,17 @@ ld rx 20
 mov ^ry rx
 
 :_debug_get_rep
-ld ry $rep
-mov rx ^ry
+mov rx ^$rep
 
 push rx
 jl 1, $repeat
 jnz $end
 
 :repeat
-ld rx 2
+ld ry $rep
+ld rx 1
 mov ^ry rx
 push rx
-jl 3, $main
+jnz $main
 
-db -1
 :end

@@ -1,0 +1,43 @@
+#include <stdlib>
+
+#define BAR_X .1
+#define BAR_Y .2
+
+#define 
+
+struct vec2{
+	float x;
+	float y;
+}
+
+const float[8] box_offset = [0,0,0,1,1,1,1,0];
+
+float get_pos(int index, vec2* vec){
+	vec += index;
+	float value = ^vec;
+	return value
+}
+
+void set_pos(int index, vec2* vec, float value){
+	vec += index;
+	^vec = value;
+}
+
+void draw_box(){
+	i = 0;
+	while (i < 8){
+	
+		
+	
+	}
+}
+
+void main(){
+
+	vec2* pos;
+	set_pos(0, pos, 1);
+	
+	float x get_pos(0, pos);
+	push(x);
+	
+}
