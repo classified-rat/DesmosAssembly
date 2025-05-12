@@ -117,11 +117,12 @@ def popPoly():
 
 # interpereter
 
+op: int
 def main():
-    global rx, ry, acc, pointer, stack
+    global rx, ry, acc, pointer, stack, op
     op = code[pointer]
 
-    logger.log(STATE, f"Op = {op} | pointer = {pointer} | rx = {rx} | ry = {ry} | acc = {acc}\n\tstack = {stack}\n\tlookahead = {code[int(pointer):int(pointer+3)]}")
+    start_pointer: int = pointer
 
     if op == 0:  # ld rx
         rx = code[pointer + 1]
@@ -184,6 +185,7 @@ def main():
 
     elif op == 14:  # ret
         ret()
+        logger.debug("Returned from call")
 
     elif op == 15:  # jl
         if stack[len(stack)] < code[pointer + 1]:
@@ -237,6 +239,34 @@ def main():
         pointer += 1
         logger.debug(f"Changed address {ry} to {rx}")
 
+    logger.log(STATE, f"Op = {op} | pointer = {start_pointer} | rx = {rx} | ry = {ry} | acc = {acc}\n\tstack = {stack}\n\tlookahead = {code[int(start_pointer):int(start_pointer+3)]}")
+
+
+# stepper input function
+stepper_data: tuple[int, int | None] | None = None
+
+
+def stepper():
+    global stepper_data
+    if stepper_data is not None:
+        if stepper_data[0] == 1:
+            if not stepper_data[1] == pointer:
+                return
+
+        if stepper_data[0] == -1:
+            if not op == 14:
+                return
+
+    command: str = input("no input - step | ^ - step out | number - step to address\n").strip()
+
+    if command == "":
+        stepper_data = None
+    elif command == "^":
+        stepper_data = (-1, 0)
+    elif command.isnumeric():
+        stepper_data = (1, int(command))
+    else:
+        stepper_data = None
 
 # driver
 if __name__ == "__main__":
@@ -255,6 +285,7 @@ if __name__ == "__main__":
     max_steps: int = int(1e5)
     step: int = 0
     while pointer <= len(code) and step < max_steps:
+        stepper()
         main()
         step += 1
 
@@ -276,4 +307,4 @@ if __name__ == "__main__":
 
     logger.info(f"Polygons: {'\n\t'.join([str(poly.points) for poly in polyStack.as_list()])}")
     polygons = f"[{',\n\t'.join([str(p) for p in stats["max polygons"]["list"].as_list()])}]"
-    logger.info(f"stats\n\tstep count: {stats["step count"]}\n\tFinal stack: {stack}\n\tMax polygons: {stats["max polygons"]["count"]}\n\t{polygons}")
+    logger.info(f"stats\n\tCode Length: {len(code)}\n\tstep count: {stats["step count"]}\n\tFinal stack: {stack}\n\tMax polygons: {stats["max polygons"]["count"]}\n\t{polygons}")
