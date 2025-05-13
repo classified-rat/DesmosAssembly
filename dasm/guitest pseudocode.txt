@@ -27,17 +27,27 @@ void draw_box(){
 	i = 0;
 	while (i < 8){
 	
+		float x_offset = box_offset[i];
+		float p = pos.x + x_offset;
 		
+		ppush(p);
+		
+		i += 1;
+		
+		float y_offset = box_offset[i];
+		float p = pos.y + y_offset;
+		
+		ppush(p);
+		
+		i += 1;
 	
 	}
+	
+	poly();
 }
 
 void main(){
 
-	vec2* pos;
-	set_pos(0, pos, 1);
-	
-	float x get_pos(0, pos);
-	push(x);
+	draw_box();
 	
 }

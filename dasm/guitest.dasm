@@ -47,27 +47,65 @@ pop ry
 ret
 
 :draw_box
-ld ry
+ld ry $box_offset
 
 :_draw_box_loop
+mov rx ^ry     ; x_offset = box_offset[i]
+push ry       ; save ry
+push rx       ; save offset for later
 
+ld rx 0       ; get pos.x
+ld ry $pos
+
+call $get_pos
+pop
+
+pop ry        ; get x_offset
+
+add           ; rx = pos.x + x_offset
+mov rx acc
+
+ppush rx
+pop ry        ; restore ry
+
+ld rx 1       ; i += 1
+add
+mov rx acc
+
+call $swap    ; mov rx to ry
+pop
+
+mov rx ^ry     ; x_offset = box_offset[i]
+push ry       ; save ry
+push rx       ; save offset for later
+
+ld rx 1       ; get pos.x
+ld ry $pos
+
+call $get_pos
+pop
+
+pop ry        ; get x_offset
+
+add           ; rx = pos.x + x_offset
+mov rx acc
+
+ppush rx
+pop ry        ; restore ry
+
+ld rx 1       ; i += 1
+add
+mov rx acc
+
+call $swap    ; mov rx to ry
+pop
+
+push ry
+jl $box_offset_end], $_draw_box_loop
+
+poly
+ret
 
 :start
-ld rx 1       ; put one on stack
-push rx
-
-ld rx 0
-ld ry $pos
-
-:_debug_set_x
-call $set_pos ; vec.x = 1
+call $draw_box
 pop
-
-:_debug_get_x
-ld rx 0       ; load 0 in rx
-ld ry $pos
-call $get_pos  ; rx = vec.x
-pop
-
-pop
-push rx       ; put vec.x on stack
