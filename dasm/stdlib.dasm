@@ -175,36 +175,5 @@ pop
 
 ret
 
-:lookup ; (float index, int table_pointer)
-push ry             ; save ry
-push rx
-
-mov rx ^ry          ; get values for mod operation
-push rx
-pop ry
-pop rx             ; rx = index, ry = len
-
-call $mod          ; get mod of index to prevent oob indexing
-pop
-
-mov ry [1]
-
-call $incrx
-pop
-
-call $floor         ; floor index
-pop
-
-add                 ; rx += table_pointer
-mov rx acc
-
-push rx
-pop ry
-mov rx ^ry
-
-pop ry
-
-ret
-
 db -1000
 :_std_end

@@ -1,0 +1,51 @@
+struct lookupTable{
+    int length;
+    float[length];
+}
+
+lookup(float index, lookupTable* table_pointer){
+    // push ry
+    // stack +1 -0 net +1
+
+    length = &table_pointer;
+    // push ry
+    // push rx
+    // ld rx ^ry
+    // stack +2 net +3
+
+    index = mod(index, length);
+    // push rx
+    // pop ry
+    // pop rx
+    // call $mod
+    // pop
+    // stack +2 -3 net +2
+
+    index = floor(index);
+    // call $floor
+    // pop
+    // stack +1 -1 net +2
+
+    int pointer = index + table_pointer;
+    // pop ry
+    // add
+    // mov rx acc
+    // stack +0 -1 net +1
+
+    pointer++;
+    // call $incrx
+    // pop
+    // stack +1 -1 net +1
+
+    float value = &pointer;
+    // push rx
+    // pop ry
+    // mov rx ^ry
+    // stack +1 -1 net +1
+
+    return value;
+    // pop ry
+    // ret
+    // stack +0 -1 net +0
+
+}

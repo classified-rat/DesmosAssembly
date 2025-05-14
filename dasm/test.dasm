@@ -1,17 +1,41 @@
 push rx
 jl 1, $start
 
+:lookup ; (float index, int table_pointer)
+push ry
+
+push ry
+push rx
+ld rx ^ry
+
+push rx
+pop ry
+pop rx
+call $mod
+pop
+
+call $floor
+pop
+
+pop ry
+add
+mov rx acc
+
+call $incrx
+pop
+
+push rx
+pop ry
+mov rx ^ry
+
+pop ry
+ret
+
 :looky
-db 5,1,2,3,4,5
+db 5
+db 1,2,3,4,5
 
 :start
 
 ld rx 0
 ld ry $looky
-
-call $lookup
-pop
-
-push rx
-
-:end
