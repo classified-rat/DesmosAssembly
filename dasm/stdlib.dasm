@@ -1,4 +1,4 @@
-#define CIRCLE 1,0,0.991,0.131,0.966,0.259,0.924,0.383,0.866,0.5,0.793,0.609,0.707,0.707,0.609,0.793,0.5,0.866,0.383,0.924,0.259,0.966,0.131,0.991,0,1,-0.131,0.991,-0.259,0.966,-0.383,0.924,-0.5,0.866,-0.609,0.793,-0.707,0.707,-0.793,0.609,-0.866,0.5,-0.924,0.383,-0.966,0.259,-0.991,0.131,-1,0,-0.991,-0.131,-0.966,-0.259,-0.924,-0.383,-0.866,-0.5,-0.793,-0.609,-0.707,-0.707,-0.609,-0.793,-0.5,-0.866,-0.383,-0.924,-0.259,-0.966,-0.131,-0.991,0,-1,0.131,-0.991,0.259,-0.966,0.383,-0.924,0.5,-0.866,0.609,-0.793,0.707,-0.707,0.793,-0.609,0.866,-0.5,0.924,-0.383,0.966,-0.259,0.991,-0.131
+;#define CIRCLE 1,0,0.991,0.131,0.966,0.259,0.924,0.383,0.866,0.5,0.793,0.609,0.707,0.707,0.609,0.793,0.5,0.866,0.383,0.924,0.259,0.966,0.131,0.991,0,1,-0.131,0.991,-0.259,0.966,-0.383,0.924,-0.5,0.866,-0.609,0.793,-0.707,0.707,-0.793,0.609,-0.866,0.5,-0.924,0.383,-0.966,0.259,-0.991,0.131,-1,0,-0.991,-0.131,-0.966,-0.259,-0.924,-0.383,-0.866,-0.5,-0.793,-0.609,-0.707,-0.707,-0.609,-0.793,-0.5,-0.866,-0.383,-0.924,-0.259,-0.966,-0.131,-0.991,0,-1,0.131,-0.991,0.259,-0.966,0.383,-0.924,0.5,-0.866,0.609,-0.793,0.707,-0.707,0.793,-0.609,0.866,-0.5,0.924,-0.383,0.966,-0.259,0.991,-0.131
 
 ; jump to end of standard library
 push rx
@@ -57,4 +57,154 @@ mult        ; division
 pop ry      ; restore ry
 ret
 
+:sign ; (float x)
+push rx             ; check if x is negative
+jl 0, $_sign_neg
+jnz $_sign_pos
+
+; if 0 return 0
+ld rx 0
+ret
+
+:_sign_neg          ; return -1
+ld rx -1
+ret
+
+:_sign_pos
+ld rx 1            ; return 1
+ret
+
+:frac ; (float x)
+push ry             ; save ry
+push rx             ; check if x is negative
+jl 0, $_frac_neg
+jnz $_frac_pos
+
+:_frac_neg          ; doesnt keep track of the sign of x
+ld ry -1
+mult
+mov rx acc
+
+push ry             ; jump over positive case
+jnz $_frac_loop
+
+:_frac_pos
+ld ry -1            ; set ry to -1 for next step
+
+:_frac_loop
+dec rx              ; subtract 1 until x 0 1
+push rx
+jl 0, $_frac_loop_exit
+jnz $_frac_loop
+
+:_frac_loop_exit
+call $incrx
+pop
+
+pop ry              ; restore ry
+ret
+
+:floor ; (float x)
+push ry
+push rx             ; save rx
+call $sign          ; get sign of x
+pop
+
+push rx             ; put sign on the stack
+push rx             ; move sign to ry
+pop ry
+
+mov rx [2]          ; restore rx
+
+call $frac          ; get fractional part
+pop
+
+neg                 ; get negatve of frac part
+
+push rx             ; store frac part on stack
+mov rx [3]          ; get original value
+mult                ; x = abs(x)
+
+pop ry              ; get fractional part
+add                 ; subtract frac part from abs(x)
+mov rx acc
+
+pop ry              ; pop sign into ry
+mult                ; multiply by sign
+
+pop
+pop ry              ; restore ry
+
+ret
+
+:mod ; (float x, float y)
+push ry             ; save y
+
+push rx             ; put sign of rx on stack
+call $sign
+pop
+push rx
+
+mov rx [2]
+
+call $swap
+pop
+
+inv                 ; y = 1/2
+
+call $swap
+pop
+
+mult
+mov rx acc
+call $frac         ; frac(x/y)
+pop
+:_debug_frac_call
+
+mov ry [3]
+mult                ; frac(x/y) * y
+mov rx acc
+
+pop ry
+
+mult              ; multiply rx by sign
+mov rx acc
+
+pop
+pop
+
+ret
+
+:lookup ; (float index, int table_pointer)
+push ry             ; save ry
+push rx
+
+mov rx ^ry          ; get values for mod operation
+push rx
+pop ry
+pop rx             ; rx = index, ry = len
+
+call $mod          ; get mod of index to prevent oob indexing
+pop
+
+mov ry [1]
+
+call $incrx
+pop
+
+call $floor         ; floor index
+pop
+
+add                 ; rx += table_pointer
+mov rx acc
+
+push rx
+pop ry
+mov rx ^ry
+
+pop ry
+
+ret
+
+db -1000
 :_std_end

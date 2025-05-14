@@ -1,8 +1,17 @@
+push rx
+jl 1, $start
+
+:looky
+db 5,1,2,3,4,5
+
+:start
+
 ld rx 0
+ld ry $looky
 
-ld ry -1000
-
-call $incrx
+call $lookup
 pop
 
 push rx
+
+:end
