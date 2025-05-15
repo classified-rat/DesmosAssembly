@@ -10,7 +10,7 @@ lookup(float index, lookupTable* table_pointer){
     length = &table_pointer;
     // push ry
     // push rx
-    // ld rx ^ry
+    // mov rx ^ry
     // stack +2 net +3
 
     index = mod(index, length);
@@ -47,5 +47,34 @@ lookup(float index, lookupTable* table_pointer){
     // pop ry
     // ret
     // stack +0 -1 net +0
+
+}
+
+#define PI 3.14159
+#define hPI 1.570796
+
+float sin(float x){
+
+    x = mod(x, PI);
+    // ld ry $PI
+    // call $mod
+    // pop
+
+    if (x > hPI){
+    // push rx
+    // jl $hPI, $_sin_sim
+    // pop
+
+        x = PI - x;
+        // call $swap
+        // pop
+        // ld rx $PI
+        // call $sub
+        // pop
+
+    }
+    // :_sin_sim
+
+
 
 }
