@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+import math
 import sys
 from typing import Optional
 from collections import UserList
@@ -200,7 +201,10 @@ class Dlist(UserList):
             return self.data[int(i - 1)]
 
     def __setitem__(self, i, item):
-        self.data[i - 1] = item
+        self.data[i - 1] = round(item, 7)
+
+    def append(self, item):
+        self.data.append(round(item, 7))
 
     def __repr__(self):
         return f"D{repr(self.data)}"
